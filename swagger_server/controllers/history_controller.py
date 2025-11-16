@@ -375,3 +375,4 @@ def post_artist_history(body):  # noqa: E501
     finally:
         if connection:
             dbDesconectar()
+
