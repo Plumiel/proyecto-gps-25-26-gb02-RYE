@@ -39,7 +39,7 @@ def delete_artist_history(body):  # noqa: E501
     """Add a new track to the database"""
 
     # Verificar autenticación defensiva
-    authorized, error_response, token = check_auth(required_scopes=['write:tracks'])
+    authorized, error_response, token = check_auth(required_scopes=['write'])
     if not authorized:
         return error_response
     
@@ -65,12 +65,12 @@ def delete_artist_history(body):  # noqa: E501
 
         connection.commit()
 
-        return True
+        return "", 200
     except Exception as e:
         print(f"Error deleting artist history: {e}")
         if connection:
             connection.rollback()
-        return False
+        return Error(code="500", message="Internal server error"), 500
     finally:
         if connection:
             dbDesconectar()
@@ -87,7 +87,7 @@ def delete_song_history(body):  # noqa: E501
     :rtype: None
     """
     # Verificar autenticación defensiva
-    authorized, error_response, token = check_auth(required_scopes=['write:tracks'])
+    authorized, error_response, token = check_auth(required_scopes=['write'])
     if not authorized:
         return error_response
     
@@ -111,11 +111,12 @@ def delete_song_history(body):  # noqa: E501
                        (user_id, body.id))
 
         connection.commit()
+        return "", 200
     except Exception as e:
         print(f"Error deleting song history: {e}")
         if connection:
             connection.rollback()
-        return False
+        return Error(code="500", message="Internal server error"), 500
     finally:
         if connection:
             dbDesconectar()
@@ -130,12 +131,12 @@ def get_genre_count():  # noqa: E501
     :rtype: List[UserGenres]
     """
     # Verificar autenticación defensiva
-    authorized, error_response, token = check_auth(required_scopes=['write:tracks'])
+    authorized, error_response, token = check_auth(required_scopes=['read'])
     if not authorized:
         return error_response
     
-    if not connexion.request.is_json:
-        return Error(code="400", message="Invalid JSON"), 400
+    # if not connexion.request.is_json:
+    #     return Error(code="400", message="Invalid JSON"), 400
     
     user = is_valid_token(token)
     user_id = user.idUsuario
@@ -182,7 +183,7 @@ def get_genre_count():  # noqa: E501
         print(f"Error deleting artist history: {e}")
         if connection:
             connection.rollback()
-        return None
+        return Error(code="500", message="Internal server error"), 500
     finally:
         if connection:
             dbDesconectar()
@@ -198,12 +199,12 @@ def get_user_metrics():  # noqa: E501
     """
 
     # Verificar autenticación defensiva
-    authorized, error_response, token = check_auth(required_scopes=['write:tracks'])
+    authorized, error_response, token = check_auth(required_scopes=['read'])
     if not authorized:
         return error_response
     
-    if not connexion.request.is_json:
-        return Error(code="400", message="Invalid JSON"), 400
+    # if not connexion.request.is_json:
+    #     return Error(code="400", message="Invalid JSON"), 400
     
     user = is_valid_token(token)
     user_id = user.idUsuario
@@ -241,7 +242,7 @@ def get_user_metrics():  # noqa: E501
                             FROM HistorialCanciones
                             WHERE idUsuario = %s;"""
         cursor.execute(listen_sql, 
-                       (user_id))
+                       (user_id,))
         
         listening_row = cursor.fetchone()
         first_listen = listening_row[0] #fechas, en teoría
@@ -264,7 +265,7 @@ def get_user_metrics():  # noqa: E501
         print(f"Error deleting artist history: {e}")
         if connection:
             connection.rollback()
-        return None
+        return Error(code="500", message="Internal server error"), 500
     finally:
         if connection:
             dbDesconectar()
@@ -282,7 +283,7 @@ def new_song_history(body):  # noqa: E501
     :rtype: None
     """
     # Verificar autenticación defensiva
-    authorized, error_response, token = check_auth(required_scopes=['write:tracks'])
+    authorized, error_response, token = check_auth(required_scopes=['write'])
     if not authorized:
         return error_response
     
@@ -313,12 +314,12 @@ def new_song_history(body):  # noqa: E501
         ))
 
         connection.commit()
-        return True
+        return "", 200
     except Exception as e:
         print(f"Error adding song history: {e}")
         if connection:
             connection.rollback()
-        return False
+        return Error(code="500", message="Internal server error"), 500
     finally:
         if connection:
             dbDesconectar()
@@ -335,7 +336,7 @@ def post_artist_history(body):  # noqa: E501
     :rtype: None
     """
     # Verificar autenticación defensiva
-    authorized, error_response, token = check_auth(required_scopes=['write:tracks'])
+    authorized, error_response, token = check_auth(required_scopes=['write'])
     if not authorized:
         return error_response
     
@@ -366,12 +367,12 @@ def post_artist_history(body):  # noqa: E501
         ))
 
         connection.commit()
-        return True
+        return "", 200
     except Exception as e:
         print(f"Error adding artist history: {e}")
         if connection:
             connection.rollback()
-        return False
+        return Error(code="500", message="Internal server error"), 500
     finally:
         if connection:
             dbDesconectar()

@@ -157,7 +157,7 @@ paths:
       - oversound_auth:
         - read
       x-openapi-router-controller: swagger_server.controllers.history_controller
-  /history/user-grenres:
+  /history/user-genres:
     get:
       tags:
       - history

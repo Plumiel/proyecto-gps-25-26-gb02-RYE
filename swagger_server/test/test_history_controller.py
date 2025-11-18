@@ -47,7 +47,7 @@ class TestHistoryController(BaseTestCase):
         Get an user's genre count.
         """
         response = self.client.open(
-            '/history/user-grenres',
+            '/history/user-genres',
             method='GET')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))

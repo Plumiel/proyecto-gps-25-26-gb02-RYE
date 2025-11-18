@@ -42,12 +42,12 @@ def get_artist_recs():  # noqa: E501
     :rtype: List[ArtistRecommendations]
     """
     # Verificar autenticación defensiva
-    authorized, error_response, token = check_auth(required_scopes=['write:tracks'])
+    authorized, error_response, token = check_auth(required_scopes=['read'])
     if not authorized:
         return error_response
     
-    if not connexion.request.is_json:
-        return Error(code="400", message="Invalid JSON"), 400
+    # if not connexion.request.is_json:
+    #     return Error(code="400", message="Invalid JSON"), 400
     
     user = is_valid_token(token)
     user_id = user.idUsuario
@@ -138,7 +138,7 @@ def get_artist_recs():  # noqa: E501
     except Exception as e:
         if connection:
             connection.rollback()
-        return []
+        return Error(code="500", message="Internal server error"), 500
 
     finally:
         if connection:
@@ -154,12 +154,12 @@ def get_song_recs():  # noqa: E501
     :rtype: List[SongRecommendations]
     """
     # Verificar autenticación defensiva
-    authorized, error_response, token = check_auth(required_scopes=['write:tracks'])
+    authorized, error_response, token = check_auth(required_scopes=['read'])
     if not authorized:
         return error_response
     
-    if not connexion.request.is_json:
-        return Error(code="400", message="Invalid JSON"), 400
+    # if not connexion.request.is_json:
+    #     return Error(code="400", message="Invalid JSON"), 400
     
     user = is_valid_token(token)
     user_id = user.idUsuario
@@ -240,7 +240,7 @@ def get_song_recs():  # noqa: E501
     except Exception as e:
         if connection:
             connection.rollback()
-        return []
+        return Error(code="500", message="Internal server error"), 500
 
     finally:
         if connection:

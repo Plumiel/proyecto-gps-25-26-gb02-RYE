@@ -77,7 +77,7 @@ def get_artist_metrics(artist_id):  # noqa: E501
         print(f"Error getting artist metrics: {e}")
         if connection:
             connection.rollback()
-        return []
+        return Error(code="500", message="Internal server error"), 500
 
     finally:
         if connection:
@@ -128,7 +128,7 @@ def get_song_metrics(song_id):  # noqa: E501
         print(f"Error getting song metrics: {e}")
         if connection:
             connection.rollback()
-        return []
+        return Error(code="500", message="Internal server error"), 500
 
     finally:
         if connection:
@@ -183,7 +183,7 @@ def get_top10_artists():  # noqa: E501
         print(f"Error getting top 10 artists: {e}")
         if connection:
             connection.rollback()
-        return []
+        return Error(code="500", message="Internal server error"), 500
     finally:
         if connection:
             dbDesconectar()
@@ -203,7 +203,7 @@ def get_top10_songs():  # noqa: E501
 
         popu_sql = """
             SELECT idCancion, SUM(escuchas) AS total_playbacks
-            FROM HistorialArtistasCanciones
+            FROM HistorialArtistas
             GROUP BY idCancion
             ORDER BY total_playbacks DESC
             LIMIT 10;
@@ -240,7 +240,7 @@ def get_top10_songs():  # noqa: E501
         print(f"Error getting top 10 song: {e}")
         if connection:
             connection.rollback()
-        return []
+        return Error(code="500", message="Internal server error"), 500
     finally:
         if connection:
             dbDesconectar()
