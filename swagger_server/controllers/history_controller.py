@@ -295,7 +295,6 @@ def new_song_history(body):  # noqa: E501
 
     try:
         connection = dbConectar()
-        # Schizoid
         cursor = connection.cursor()
 
         if connexion.request.is_json:

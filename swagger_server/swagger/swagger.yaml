@@ -368,7 +368,7 @@ components:
       properties:
         id:
           type: integer
-          description: Unique identifier of the history record
+          description: User's identifier
           example: 10
         subjectId:
           type: integer

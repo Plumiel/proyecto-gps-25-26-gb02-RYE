@@ -203,13 +203,13 @@ def get_top10_songs():  # noqa: E501
 
         popu_sql = """
             SELECT idCancion, SUM(escuchas) AS total_playbacks
-            FROM HistorialArtistas
+            FROM HistorialCanciones
             GROUP BY idCancion
             ORDER BY total_playbacks DESC
             LIMIT 10;
             """
         cursor.execute(popu_sql)
-        top_songs = cursor.fetchall()  #pilla idArtista, total_playbacks
+        top_songs = cursor.fetchall()  #pilla idCancion, total_playbacks
 
         top_10 = []
 
