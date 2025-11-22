@@ -4,10 +4,10 @@ from psycopg2.extensions import connection
 def dbConectar() -> connection:
     ip = "10.1.1.1"
     puerto = 5432
-    basedatos = "Habitantes"
+    basedatos = "rye"
 
-    usuario = "gps"
-    contrasena = "1001"
+    usuario = "rye_admin"
+    contrasena = "12345"
 
     print("---dbConectar---")
     print("---Conectando a Postgresql---")
