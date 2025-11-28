@@ -25,50 +25,28 @@ def check_auth(required_scopes=None):
         return False, (error, 401)
     return True, None, token
 
-
-def delete_artist_history(body):  # noqa: E501
-    """Deletes an artist from user&#x27;s history.
-
-    Delete an user&#x27;s artist history. # noqa: E501
-
-    :param artist_id: Artist id to delete.
-    :type artist_id: str
-
-    :rtype: None
-    """
-    """Add a new track to the database"""
-
-    print("DEBUG: Starting delete_artist_history")
-
-    # Verificar autenticación defensiva
+def delete_artist(artist_id):
     print("DEBUG: Checking authentication")
     authorized, error_response, token = check_auth(required_scopes=['write'])
     if not authorized:
         print("DEBUG: Authentication failed")
         return error_response
     
-    if not connexion.request.is_json:
-        print("DEBUG: Invalid JSON request")
-        return Error(code="400", message="Invalid JSON"), 400
-    
-    user = is_valid_token(token)
-    user_id = user["userId"]
-    print(f"DEBUG: User ID: {user_id}")
-    
     try:
         print("DEBUG: Connecting to database")
         connection = dbConectar()
         cursor = connection.cursor()
 
-        if connexion.request.is_json:
-            body = Identifier.from_dict(connexion.request.get_json())  # noqa: E501
-
+        user = is_valid_token(token)
+        user_id = user["userId"]
+        print(f"DEBUG: User ID: {user_id}")
+        
         # Deleting artist
-        print(f"DEBUG: Deleting artist {body.id} for user {user_id}")
+        print(f"DEBUG: Deleting artist {artist_id} for user {user_id}")
         sql = """DELETE FROM HistorialArtistas
                     WHERE idUsuario = %s AND idArtista = %s """
         cursor.execute(sql, 
-                       (user_id, body.id))
+                        (user_id, artist_id))
 
         connection.commit()
         print("DEBUG: Artist deleted successfully")
@@ -83,6 +61,69 @@ def delete_artist_history(body):  # noqa: E501
             print("DEBUG: Disconnecting from database")
             dbDesconectar(connection)
 
+def delete_artist_history(body):  # noqa: E501
+    """Deletes an artist from user&#x27;s history.
+
+    Delete an user&#x27;s artist history. # noqa: E501
+
+    :param artist_id: Artist id to delete.
+    :type artist_id: str
+
+    :rtype: None
+    """
+    """Add a new track to the database"""
+
+    # Verificar autenticación defensiva
+    print("DEBUG: Checking authentication")
+    authorized, error_response, token = check_auth(required_scopes=['write'])
+    if not authorized:
+        print("DEBUG: Authentication failed")
+        return error_response
+    
+    if not connexion.request.is_json:
+        print("DEBUG: Invalid JSON request")
+        return Error(code="400", message="Invalid JSON"), 400
+
+    if connexion.request.is_json:
+        body = Identifier.from_dict(connexion.request.get_json())  # noqa: E501
+
+    delete_artist(body.id)
+
+def delete_song(song_id):
+    print("DEBUG: Checking authentication")
+    authorized, error_response, token = check_auth(required_scopes=['write'])
+    if not authorized:
+        print("DEBUG: Authentication failed")
+        return error_response
+    
+    try:
+        print("DEBUG: Connecting to database")
+        connection = dbConectar()
+        cursor = connection.cursor()
+
+        user = is_valid_token(token)
+        user_id = user["userId"]
+        print(f"DEBUG: User ID: {user_id}")
+        
+        # Deleting song
+        print(f"DEBUG: Deleting song {song_id} for user {user_id}")
+        sql = """DELETE FROM HistorialCanciones
+                    WHERE idUsuario = %s AND idCancion = %s """
+        cursor.execute(sql, 
+                       (user_id, song_id))
+
+        connection.commit()
+        print("DEBUG: Song deleted successfully")
+        return "", 200
+    except Exception as e:
+        print(f"Error deleting song history: {e}")
+        if connection:
+            connection.rollback()
+        return Error(code="500", message="Internal server error"), 500
+    finally:
+        if connection:
+            print("DEBUG: Disconnecting from database")
+            dbDesconectar(connection)
 
 def delete_song_history(body):  # noqa: E501
     """Deletes a song from user&#x27;s history.
@@ -106,39 +147,11 @@ def delete_song_history(body):  # noqa: E501
     if not connexion.request.is_json:
         print("DEBUG: Invalid JSON request")
         return Error(code="400", message="Invalid JSON"), 400
-    
-    user = is_valid_token(token)
-    user_id = user["userId"]
-    print(f"DEBUG: User ID: {user_id}")
-    
-    try:
-        print("DEBUG: Connecting to database")
-        connection = dbConectar()
-        cursor = connection.cursor()
 
-        if connexion.request.is_json:
-            body = Identifier.from_dict(connexion.request.get_json())  # noqa: E501
+    if connexion.request.is_json:
+        body = Identifier.from_dict(connexion.request.get_json())  # noqa: E501
 
-        # Deleting song
-        print(f"DEBUG: Deleting song {body.id} for user {user_id}")
-        sql = """DELETE FROM HistorialCanciones
-                    WHERE idUsuario = %s AND idCancion = %s """
-        cursor.execute(sql, 
-                       (user_id, body.id))
-
-        connection.commit()
-        print("DEBUG: Song deleted successfully")
-        return "", 200
-    except Exception as e:
-        print(f"Error deleting song history: {e}")
-        if connection:
-            connection.rollback()
-        return Error(code="500", message="Internal server error"), 500
-    finally:
-        if connection:
-            print("DEBUG: Disconnecting from database")
-            dbDesconectar(connection)
-
+    delete_song(body.id)
 
 def get_genre_count():  # noqa: E501
     """Get an user&#x27;s genre count.

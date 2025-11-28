@@ -9,6 +9,7 @@ from swagger_server.models.song_recommendations import SongRecommendations  # no
 from swagger_server import util
 from swagger_server.dbconx.db_connection import dbConectar, dbDesconectar
 from collections import Counter
+from .history_controller import delete_artist, delete_song
 import requests
 
 TYA_SERVER = 'http://localhost:8081'
@@ -201,8 +202,8 @@ def get_top10_artists():  # noqa: E501
                     )
                     print(f"DEBUG: Added artist {artist_id} to top 10")
                 else:
-                    top_10.append(ArtistRecommendations(id=artist_id, name="Unknown", image=None))
-                    print(f"DEBUG: Added unknown artist {artist_id} due to API error")
+                    delete_artist(artist_id)
+                    continue
             except Exception as e:
                 print(f"Error fetching artist info: {e}")
                 top_10.append(ArtistRecommendations(id=artist_id, name="Unknown", image=None))
@@ -268,12 +269,12 @@ def get_top10_songs():  # noqa: E501
                     )
                     print(f"DEBUG: Added song {song_id} to top 10")
                 else:
-                    top_10.append(SongRecommendations(id=song_id, name="Unknown", genre="Unknown", image=None))
-                    print(f"DEBUG: Added unknown song {song_id} due to API error")
+                    delete_song(song_id)
+                    continue
             except Exception as e:
-                print(f"Error fetching song info: {e}")
-                top_10.append(SongRecommendations(id=song_id, name="Unknown", genre="Unknown", image=None))
-                print(f"DEBUG: Added unknown song {song_id} due to exception")
+                print(f"Error fetching artist info: {e}")
+                top_10.append(ArtistRecommendations(id=song_id, name="Unknown", image=None))
+                print(f"DEBUG: Added unknown artist {song_id} due to exception")
 
         print(f"DEBUG: Returning top 10 songs: {len(top_10)} items")
         return top_10
