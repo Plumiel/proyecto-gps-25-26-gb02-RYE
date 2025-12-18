@@ -1,10 +1,11 @@
 import psycopg2 as DB
 from psycopg2.extensions import connection
+import os
 
 def dbConectar() -> connection:
-    ip = "10.1.1.1"
-    puerto = 5432
-    basedatos = "rye"
+    ip = os.environ.get("DB_HOST", "localhost")
+    puerto = int(os.environ.get("DB_PORT", 5432))
+    basedatos = os.environ.get("DB_NAME", "rye")
 
     usuario = "rye_admin"
     contrasena = "12345"
